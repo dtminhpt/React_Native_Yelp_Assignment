@@ -7,7 +7,8 @@ import {
   ListView, 
   TextInput, 
   Button, 
-  Image, StatusBar
+  Image, 
+  TouchableHighlight
 } from 'react-native';
 
 export default class HomePage extends Component {
@@ -88,12 +89,11 @@ export default class HomePage extends Component {
   renderHeader(){
       return(
       <View style={{flexDirection: 'row', backgroundColor: 'red'}}>
-          <Button style={styles.button}
-            onPress={() => alert("CLick Filter")}
-            title="Filter"
-            color="#841584"
-            accessibilityLabel="Learn more about this purple button"
-          />
+          <TouchableHighlight underlayColor='#99d9f4'
+            style={styles.button}
+            onPress={() => alert("CLick Filter")}>
+            <Text style={styles.buttonText}>Filter</Text>
+          </TouchableHighlight> 
 
           <TextInput
               style={styles.inputSearch}
@@ -136,10 +136,6 @@ export default class HomePage extends Component {
     render() {
       return (
         <View style={{marginTop: 20}}>
-          <StatusBar
-            backgroundColor="red"
-            //barStyle="light-content"
-          />
           <ListView
               renderHeader={this.renderHeader.bind(this)}
               enableEmptySections={true}
@@ -181,11 +177,16 @@ const styles = StyleSheet.create({
   }, 
   button: {
     flex:1, 
-    flexDirection: 'row', 
-    borderWidth: 2, 
+    borderWidth: 1, 
     borderColor: 'black', 
     borderRadius: 10,  
-    textAlign: 'center' 
+    height: 30, 
+    margin: 5, 
+  },
+  buttonText: {
+    alignSelf: 'center', 
+    marginTop: 5, 
+    color: 'white'
   }
 });
 
