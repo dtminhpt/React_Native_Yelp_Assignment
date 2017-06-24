@@ -22,7 +22,6 @@ export default class HomePage extends Component {
       };
     }
   componentWillMount(){
-    alert("Xin chao minh")
     this.fetchToken();
   }
 
@@ -88,16 +87,8 @@ export default class HomePage extends Component {
   }
     renderHeader(){
         return(
-        // <View>
-        //     <TextInput
-        //         style={styles.inputSearch}
-        //         onChangeText={(searchText) => this.searchMovie(searchText)}
-        //         value={this.state.searchText}
-        //         placeholder="Search..."
-        //     />
-        // </View>
         <View style={{flexDirection: 'row', backgroundColor: 'red'}}>
-            <Button style={{flex:1, flexDirection: 'row', alignSelf: 'left'}}
+            <Button style={styles.button}
               title="Filter"
               color="#841584"
               accessibilityLabel="Learn more about this purple button"
@@ -116,19 +107,6 @@ export default class HomePage extends Component {
     renderRow(rowData) {
         return(
           <View>
-            {/*<View style={styles.container}>
-              <Image
-                source={{uri: rowData.image_url}}
-                //style={styles.thumbnail}
-              />
-              <View style={styles.rightContainer}>
-                <Text style={styles.title}>{rowData.name}</Text>
-                <Text style={styles.year}>{rowData.location.address1}</Text>
-              </View>
-            </View>*/}
-            
-            
-            
             <View style={styles.container}>
                 <Image 
                   source={{uri: rowData.image_url}}
@@ -189,15 +167,23 @@ const styles = StyleSheet.create({
     margin: 10
   },
   inputSearch:{
-      height: 30,
-      width: 250,
-      flex: 2.5,
-      paddingHorizontal: 8,
-      fontSize: 15,
-      backgroundColor: '#FFFFFF',
-      borderRadius: 2, 
-      borderWidth: 1, 
-      margin: 5
+    height: 30,
+    width: 250,
+    flex: 2.5,
+    paddingHorizontal: 8,
+    fontSize: 15,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 2, 
+    borderWidth: 1, 
+    margin: 5
+  }, 
+  button: {
+    flex:1, 
+    flexDirection: 'row', 
+    borderWidth: 2, 
+    borderColor: 'black', 
+    borderRadius: 10,  
+    textAlign: 'center' 
   }
 });
 
