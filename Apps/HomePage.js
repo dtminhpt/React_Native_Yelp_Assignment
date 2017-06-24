@@ -85,23 +85,24 @@ export default class HomePage extends Component {
           return json; // Token
         })
   }
-    renderHeader(){
-        return(
-        <View style={{flexDirection: 'row', backgroundColor: 'red'}}>
-            <Button style={styles.button}
-              title="Filter"
-              color="#841584"
-              accessibilityLabel="Learn more about this purple button"
-            />
+  renderHeader(){
+      return(
+      <View style={{flexDirection: 'row', backgroundColor: 'red'}}>
+          <Button style={styles.button}
+            onPress={() => alert("CLick Filter")}
+            title="Filter"
+            color="#841584"
+            accessibilityLabel="Learn more about this purple button"
+          />
 
-            <TextInput
-                style={styles.inputSearch}
-                onChangeText={(searchText) => this.searchMovie(searchText)}
-                value={this.state.searchText}
-                placeholder="Search..."
-            />
-        </View>
-        )
+          <TextInput
+              style={styles.inputSearch}
+              onChangeText={(searchText) => this.searchMovie(searchText)}
+              value={this.state.searchText}
+              placeholder="Search..."
+          />
+      </View>
+      )
     }
 
     renderRow(rowData) {
@@ -125,9 +126,10 @@ export default class HomePage extends Component {
 
     renderSeparator() {
       return (<View style={{
-          width: '100%',
-          height: 5,
-          backgroundColor: "#848484"
+          width: '90%',
+          height: 2,
+          alignSelf: 'center',
+          backgroundColor: "#909090"
       }}></View>)
     }
 
@@ -173,7 +175,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     fontSize: 15,
     backgroundColor: '#FFFFFF',
-    borderRadius: 2, 
+    borderRadius: 6, 
     borderWidth: 1, 
     margin: 5
   }, 
