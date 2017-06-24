@@ -19,7 +19,8 @@ export default class HomePage extends Component {
         dataSource: ds.cloneWithRows([]),
         access_token: "", 
         token_type: "", 
-        //fullListData: []
+        //fullListData: [], 
+        searchString: ""
       };
     }
   componentWillMount(){
@@ -86,6 +87,33 @@ export default class HomePage extends Component {
           return json; // Token
         })
   }
+
+  searchRestaurant(text) {
+    this.setState({
+      searchString: text
+    })
+
+    var rows = [];
+    for (var i=0; i < this.state.dataSource._dataBlob.s1.length; i++) {
+      var name = this.state.dataSource._dataBlob.s1[i].name.toLowerCase();
+      if(name.search(text.toLowerCase()) !== -1){
+        rows.push(this.state.dataSource._dataBlob.s1[i]);
+      }
+    }
+
+    this.setState({
+      dataSource: this.state.dataSource.cloneWithRows(rows)
+    });
+
+    if (text === '') {
+      this.fetchToken();
+    }
+
+    if (rows.length === 0) {
+      alert("No result");
+    }
+  }
+
   renderHeader(){
       return(
       <View style={{flexDirection: 'row', backgroundColor: 'red'}}>
@@ -97,8 +125,8 @@ export default class HomePage extends Component {
 
           <TextInput
               style={styles.inputSearch}
-              onChangeText={(searchText) => this.searchMovie(searchText)}
-              value={this.state.searchText}
+              onChangeText={(searchString) => this.searchRestaurant(searchString)}
+              value={this.state.searchString}
               placeholder="Search..."
           />
       </View>
