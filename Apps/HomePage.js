@@ -9,10 +9,15 @@ import {
   Button, 
   Image, 
   TouchableHighlight, 
-  RefreshControl
+  RefreshControl, 
+  ActivityIndicator, 
+  Dimensions
 } from 'react-native';
 
-let _restaurantList = []; 
+let _restaurantList = [];
+let DIMS = Dimensions.get('window'); 
+let SCREEN_WIDTH = DIMS.width;
+let SCREEN_HEIGHT = DIMS.height;
 export default class HomePage extends Component {
     constructor(props) {
       super(props);
@@ -24,7 +29,8 @@ export default class HomePage extends Component {
         searchString: "", 
         refreshing: false, 
         isFirstPage: true, 
-        currentPage: 1
+        currentPage: 1, 
+        loading: true
       };
     }
   componentDidMount(){
@@ -88,7 +94,8 @@ export default class HomePage extends Component {
               //dataSource: this.state.dataSource.cloneWithRows(json.businesses)
               dataSource: this.state.dataSource.cloneWithRows(_restaurantList), 
               isFirstPage: false, 
-              currentPage: this.state.currentPage + 1
+              currentPage: this.state.currentPage + 1, 
+              loading: false
             }
           )
           return json; // Token
@@ -186,6 +193,17 @@ export default class HomePage extends Component {
     }
 
     render() {
+      if(this.state.loading) {
+        return(
+          <View style={{width: SCREEN_WIDTH, height: SCREEN_HEIGHT}}>
+            <ActivityIndicator
+            loading={this.state.loading}
+            style={[styles.centering, {height: 80}]}
+            size="large"
+          />
+          </View>
+        )
+      }
       return (
         <View style={{marginTop: 20}}>
           <ListView
@@ -211,8 +229,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: 'row',
-    // justifyContent: 'center',
-    // alignItems: 'center',
     backgroundColor: '#F5FCFF',
   },
   rightContainer: {
@@ -246,7 +262,13 @@ const styles = StyleSheet.create({
     alignSelf: 'center', 
     marginTop: 5, 
     color: 'white'
-  }
+  }, 
+  centering: {
+    alignItems: 'center',
+    flex: 1, 
+    justifyContent: 'center',
+    padding: 8,
+  },
 });
 
 AppRegistry.registerComponent('HomePage', () => HomePage);

@@ -8,15 +8,15 @@ Time spent: **20** hours spent in total
 
 The following **required** functionality is completed:
 - [x] Login Screen, just a page before go to Homepage
-- [ ] Search results page
-   - [ ] Add filter button and search text input.
-   - [ ] Display items, rows should be dynamic height according to the content height.
-   - [ ] Infinite scroll for restaurant results.
+- [x] Search results page
+   - [x] Add filter button and search text input.
+   - [x] Display items, rows should be dynamic height according to the content height.
+   - [x] Infinite scroll for restaurant results.
 - [ ] Filter page: (Unfortunately, not all the filters in the real Yelp App, are supported in the Yelp API)
    - [ ] Categories should show a subset of the full list, and when click "Show all" row to expand all subset.
    - [ ] Clicking on the "Search" button should dismiss the filters page and trigger the search with the new filter settings.
    - [ ] Using Redux to storage filter data
- - [ ] Show loading page when waiting to fetch data from Yelp
+ - [x] Show loading page when waiting to fetch data from Yelp
 
 
 The following **optional** features are implemented:
@@ -26,7 +26,7 @@ The following **optional** features are implemented:
 
 ![Image](https://media.giphy.com/media/xUPGcFu0WDyYrdCdDq/giphy.gif)
 
-- [ ] Implement login page with [Facebook SDK](https://github.com/facebook/react-native-fbsdk)
+- [x] Implement login page with [Facebook SDK](https://github.com/facebook/react-native-fbsdk)
 - [ ] Implements TabbarIOS
   - [ ] ListView, the layout as description above
   - [ ] MapView, list all place on Map as Marker, and the layout as below. [Example](https://github.com/airbnb/react-native-maps#using-the-mapview-with-the-animated-api)
