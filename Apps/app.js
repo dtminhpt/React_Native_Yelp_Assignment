@@ -13,7 +13,7 @@ import {
 } from 'react-navigation';
 
 import LoginPage from './LoginPage.js'
-//import SearchPage from './SearchPage.js'
+import SearchPage from './SearchPage.js'
 
 import {Provider} from 'react-redux';
 import {createStore} from 'redux';

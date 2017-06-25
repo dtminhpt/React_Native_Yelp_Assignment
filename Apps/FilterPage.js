@@ -1,31 +1,157 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import {
-    Stylesheet,
+    StyleSheet,
     View,
     Text,
+    ListView,
+    StatusBar
 } from 'react-native';
 
-import {connect} from "react-redux";
-import {reducer} from './reducer';
+import ModalDropDown from 'react-native-modal-dropdown'
 
+import {connect} from 'react-redux'
+import {actionCreators} from './reducer.js'
+
+import SearchPage from './SearchPage.js'
+import {Yelp} from './api/YelpSearch.js'
 
 class FilterPage extends Component {
+    constructor(props) {
+        super(props);
+        this.ds = new ListView.DataSource({
+            rowHasChanged: (r1, r2) => r1 !== r2
+        });
+
+        this.state={
+            loading: true,
+            selectedDistance:{
+                index:0,
+                text: 'Auto'
+            },
+            selectedSortBy:{
+                index:0,
+                text:'Best Match'
+            },
+            categories:[{}],
+            currentCategories:[{}],
+            selectedCategories: [],
+            dataSource: this.ds.cloneWithRows([]),
+            searchTerm:''
+        }
+    }
+
     render(){
+        const distanceOptions = ['Auto','3 miles','1 miles','5 miles','20 miles'];
+        const matchOptions = ['Best Match','Review Count','Rating'];
+
         return(
             <View>
-                <Text>Filter2</Text>
-                <Text>{this.props.passProps.dataPropsFromSearch}</Text>
+                <StatusBar barStyle='light-content'/>
+                <View>
+                    <Text>Cancel</Text>
+                    <Text>Filter</Text>
+                    <Text>Search</Text>
+                </View>
+
+                <View>
+                    <Text>Distance</Text>
+                    {/*<ModalDropDown>
+                        <Text>{this.state.selectedDistance}</Text>
+                    </ModalDropDown>*/}
+                    <ModalDropDown style={styles.dropdown}
+                                    style={{paddingTop:6,paddingBottom:6, 
+                                    backgroundColor:'white',borderRadius: 5, borderWidth: 1,borderColor:'silver',
+                                    marginTop:2, marginLeft:8, marginRight:8}}
+                           textStyle={styles.dropdown_text}
+                           defaultIndex={this.state.selectedDistance.index}
+                           dropdownStyle={styles.dropdown_dropdown}
+                           options={distanceOptions} onSelect={(index,value) => this.setState({selectedDistance:
+                               { index: index, text:value}
+                           })}
+                           renderRow={alert("Haha")}>
+                           <Text style={{fontSize:22, paddingTop:4, paddingBottom:4,marginLeft:8, fontWeight:'500'}}>{this.state.selectedDistance.text}</Text>              
+                </ModalDropDown>
+
+
+                    <Text>Sort By</Text>
+                    {/*<ModalDropDown>
+                        <Text>{this.state.selectedSortBy}</Text>
+                    </ModalDropDown>*/}
+                    <ModalDropDown style={styles.dropdown}
+                                style={{paddingTop:6,paddingBottom:6,
+                            backgroundColor:'white',borderRadius: 5, borderWidth: 1,borderColor:'silver',
+                            marginTop:2, marginLeft:8, marginRight:8}}
+                           textStyle={styles.dropdown_text}
+                           defaultIndex={this.state.selectedSortBy.index}
+                           dropdownStyle={styles.dropdown_dropdown}
+                           options={matchOptions} onSelect={(index,value) => this.setState({
+                               selectedSortBy:
+                               { index: index, text:value}
+                           })}
+                           renderRow={alert("NANA")}>
+                           <Text style={{fontSize:22, paddingTop:4, paddingBottom:4,marginLeft:8, fontWeight:'500'}}>{this.state.selectedSortBy.text}</Text>              
+                    </ModalDropDown>
+
+                    <Text>Category</Text>
+                    <View>
+                        <ListView
+                            dataSource={this.state.dataSource}
+                            renderRow={(rowData, sectionID, rowID) => this.renderCategoryCell(rowData, rowID)}
+                        />
+                        <Text onPress={() => this.expandListView()}>See all...</Text>
+                    </View>
+                </View>
             </View>
         )
     }
 }
 
-const mapStatetoProps = (state) => {
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  dropdown: {
+    alignSelf: 'center',
+    top: 32,
+    right: 8,
+    justifyContent:'space-between',
+    backgroundColor: 'cornflowerblue',
+  },
+  dropdown_text: {
+    fontSize: 22,
+    color: 'white',
+    textAlign: 'center',
+  },
+  dropdown_dropdown: {
+    marginTop:10,
+    height: 253,
+
+  },
+  dropdown_row: {
+       borderTopColor: 'white',
+       width:'95%',
+    flexDirection: 'row',
+    height: 50,
+    justifyContent:'space-between',
+    alignItems: 'center',
+  },
+  dropdown_image: {
+    width: 30,
+    height: 30,
+  },
+  dropdown_row_text: {
+    marginHorizontal: 14,
+    fontSize: 22,
+    color: 'navy',
+    textAlignVertical: 'center',
+  },
+})
+
+const mapStateToProps = (state) => {
     return {
-        hahaha: state.params
+        filterData: state.params
     }
 }
 
-export default connect(mapStatetoProps)(FilterPage);
-
+export default connect(mapStateToProps)(FilterPage);
 
