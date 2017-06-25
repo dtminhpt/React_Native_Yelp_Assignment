@@ -8,9 +8,11 @@ import {
   TextInput, 
   Button, 
   Image, 
-  TouchableHighlight
+  TouchableHighlight, 
+  RefreshControl
 } from 'react-native';
 
+let _restaurantList = []; 
 export default class HomePage extends Component {
     constructor(props) {
       super(props);
@@ -19,11 +21,13 @@ export default class HomePage extends Component {
         dataSource: ds.cloneWithRows([]),
         access_token: "", 
         token_type: "", 
-        //fullListData: [], 
-        searchString: ""
+        searchString: "", 
+        refreshing: false, 
+        isFirstPage: true, 
+        currentPage: 1
       };
     }
-  componentWillMount(){
+  componentDidMount(){
     this.fetchToken();
   }
 
@@ -48,14 +52,10 @@ export default class HomePage extends Component {
       })
       .then(json => {
         console.log(json);
-        console.log(json.access_token);
-        console.log(json.token_type);
         this.setState({
           token_type: json.token_type, 
           access_token: json.access_token
         })
-        console.log(this.state.access_token);
-        console.log(this.state.token_type);
         this.fetchData();
         
         return json; // Token
@@ -63,6 +63,10 @@ export default class HomePage extends Component {
     }
 
     fetchData() {
+      if (this.state.isFirstPage) {
+        _restaurantList = [];
+      }
+
       const request = new Request('https://api.yelp.com/v3/businesses/search?term=delis&location=San%20Francisco', {
         method: 'GET',
         headers: new Headers({
@@ -78,14 +82,34 @@ export default class HomePage extends Component {
         .then(json => {
           console.log("fetchData Done");
           console.log(json.businesses);
+          _restaurantList = _restaurantList.concat(json.businesses)
           this.setState(
             {
-              //fullListData: json.businesses,
-              dataSource: this.state.dataSource.cloneWithRows(json.businesses)
+              //dataSource: this.state.dataSource.cloneWithRows(json.businesses)
+              dataSource: this.state.dataSource.cloneWithRows(_restaurantList), 
+              isFirstPage: false, 
+              currentPage: this.state.currentPage + 1
             }
           )
           return json; // Token
         })
+  }
+
+  _onEndReached() {
+    this.fetchToken();
+  }
+
+  _onRefresh() {
+    this.setState({
+      refreshing: true, 
+      isFirstPage: true
+    })
+
+    this.fetchToken().then(()=> {
+      this.setState({
+        refreshing: false
+      });
+    })
   }
 
   searchRestaurant(text) {
@@ -165,11 +189,18 @@ export default class HomePage extends Component {
       return (
         <View style={{marginTop: 20}}>
           <ListView
-              renderHeader={this.renderHeader.bind(this)}
               enableEmptySections={true}
+              renderHeader={this.renderHeader.bind(this)}
               dataSource={this.state.dataSource}
               renderRow={(rowData) => this.renderRow(rowData)}
               renderSeparator={() => this.renderSeparator()}
+              onEndReached={this._onEndReached()}
+              refreshControl={
+                <RefreshControl
+                  refreshing={this.state.refreshing}
+                  onRefresh={() => this._onRefresh.bind(this)}
+                />
+              }
           />
       </View>
       )
