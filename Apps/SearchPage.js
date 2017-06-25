@@ -14,27 +14,64 @@ import {
   Dimensions
 } from 'react-native';
 
+
+import {connect} from 'react-redux';
+import FilterPage from './FilterPage.js';
+import {Yelp} from './api/YelpSearch.js';
+
+import {actionCreators} from './reducer.js';
+
 let _restaurantList = [];
 let DIMS = Dimensions.get('window');
 let SCREEN_WIDTH = DIMS.width;
 let SCREEN_HEIGHT = DIMS.height;
-export default class SearchPage extends Component {
+
+class SearchPage extends Component {
     constructor(props) {
       super(props);
       const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
       this.state = {
-        dataSource: ds.cloneWithRows([]),
+        dataSource: ds.cloneWithRows(['']),
+        places: [''],
         access_token: "",
         token_type: "",
-        searchString: "",
+        //token: {},
+        //searchString: "",
         refreshing: false,
-        isFirstPage: true,
-        currentPage: 1,
-        loading: true
+        //isFirstPage: true,
+        //currentPage: 1,
+        loading: true, 
       };
     }
   componentDidMount(){
     this.fetchToken();
+    //this.searchWithTerm();
+  }
+
+  async searchWithTerm(){
+    let keyword = '';
+    console.log('Search props:', this.props.filterData);
+    if (this.props.filterData){
+      keyword = this.props.filterData.searchTerm;
+      console.log(keyword);
+    }
+
+    var data;
+    var count=0;
+    data = await Yelp.searchWithFilter(keyword).then((item) => {
+      return item;
+    });
+
+    if (data.length > 0) {
+      console.log(data.length);
+
+      this.setState({
+        dataSource: this.state.dataSource.cloneWithRows(data), 
+        refreshing: false, 
+        loading: false, 
+        places: data
+      })
+    }
   }
 
   fetchToken() {
@@ -52,35 +89,30 @@ export default class SearchPage extends Component {
       body: `client_id=${params.client_id}&client_secret=${params.client_secret}&grant_type=${params.grant_type}`
     });
 
-    return fetch(request)
-      .then(response => {
+    return fetch(request).then(response => {
         return response.json()
-      })
-      .then(json => {
+      }).then(json => {
         console.log(json);
-        console.log(json.access_token);
         this.setState({
           token_type: json.token_type,
           access_token: json.access_token
         })
-        this.fetchData();
-
+        this.fetchData()
         return json; // Token
       })
       .catch(error => {
           console.log('There has been a problem with your fetch operation: ' + error.message);
-            this.setState({
-                loading: false, 
-                searchString: 'Something bad happened' + error
-            })
+          this.setState({
+              loading: false, 
+              searchString: 'Something bad happened' + error
+          })
         });
-      
     }
 
-    fetchData() {
-      if (this.state.isFirstPage) {
-        _restaurantList = [];
-      }
+    async fetchData() {
+      // if (this.state.isFirstPage) {
+      //   _restaurantList = [];
+      // }
 
       const request = new Request('https://api.yelp.com/v3/businesses/search?term=delis&location=San%20Francisco', {
         method: 'GET',
@@ -90,32 +122,25 @@ export default class SearchPage extends Component {
         })
       });
 
-      return fetch(request)
-        .then(response => {
+      return await fetch(request).then(response => {
           return response.json()
-        })
-        .then(json => {
+        }).then(json => {
           console.log("fetchData Done");
           console.log("json.businesses= " + json.businesses);
-          _restaurantList = _restaurantList.concat(json.businesses)
+          //_restaurantList = _restaurantList.concat(json.businesses)
           this.setState(
             {
-              //dataSource: this.state.dataSource.cloneWithRows(json.businesses),
-              dataSource: this.state.dataSource.cloneWithRows(_restaurantList),
-              isFirstPage: false,
-              currentPage: this.state.currentPage + 1,
-              loading: false
+              dataSource: this.state.dataSource.cloneWithRows(json.businesses),
+              places: json.businesses,
+              //dataSource: this.state.dataSource.cloneWithRows(_restaurantList),
+              //isFirstPage: false,
+              //currentPage: this.state.currentPage + 1,
+              loading: false, 
+              refreshing: false,
             }
           )
           return json; // Token
-        })
-        .catch(error => {
-          console.log('There has been a problem with your fetch operation: ' + error.message);
-            this.setState({
-                loading: false, 
-                searchString: 'Something bad happened' + error
-            })
-        });
+        }).done();
   }
 
   _onEndReached() {
@@ -123,25 +148,32 @@ export default class SearchPage extends Component {
   }
 
   searchRestaurant(text) {
-    this.setState({
-      searchString: text
+    if (!text) {
+      this.setState({
+        dataSource: this.state.dataSource.cloneWithRows(this.state.places)
+      })
+    }
+
+    // this.setState({
+    //   searchString: text
+    // })
+
+    var matchingPlaces = [];
+    this.state.places.forEach(function(place) {
+      if (place.name.toLowerCase().match(text.toLowerCase()))
+        matchingPlaces.push(place)
     })
 
-    var rows = [];
-    for (var i=0; i < this.state.dataSource._dataBlob.s1.length; i++) {
-      var name = this.state.dataSource._dataBlob.s1[i].name.toLowerCase();
-      if(name.search(text.toLowerCase()) !== -1){
-        rows.push(this.state.dataSource._dataBlob.s1[i]);
-      }
-    }
+    // for (var i=0; i < this.state.dataSource._dataBlob.s1.length; i++) {
+    //   var name = this.state.dataSource._dataBlob.s1[i].name.toLowerCase();
+    //   if(name.search(text.toLowerCase()) !== -1){
+    //     matchingPlaces.push(this.state.dataSource._dataBlob.s1[i]);
+    //   }
+    // }
 
     this.setState({
-      dataSource: this.state.dataSource.cloneWithRows(rows)
+      dataSource: this.state.dataSource.cloneWithRows(matchingPlaces)
     });
-
-    if (text === '') {
-      this.fetchToken();
-    }
 
     if (rows.length === 0) {
       alert("No result");
@@ -180,8 +212,15 @@ export default class SearchPage extends Component {
               />
               <View style={{marginLeft:10}}>
                 <Text style={{fontWeight: 'bold'}}>{rowData.name}</Text>
-                <Text>{rowData.review_count} Reviews</Text>
-                <Text style={styles.year}>{rowData.location.address1}</Text>
+                <View>
+                  <Text>{rowData.review_count} Reviews</Text>
+                </View>
+                <View>
+                  <Text>Address:{rowData.location.address1}, {rowData.location.address2}</Text>
+                  <Text>{rowData.location.city} - 
+                        {rowData.location.display_address[rowData.location.display_address.length - 1]}
+                  </Text>
+                </View>
               </View>
           </View>
         </View>
@@ -274,4 +313,9 @@ const styles = StyleSheet.create({
   },
 });
 
-AppRegistry.registerComponent('SearchPage', () => SearchPage);
+const mapStateToProps = (state) => {
+  return {
+    filterData: state.params,
+  }
+}
+export default connect(mapStateToProps)(SearchPage);
