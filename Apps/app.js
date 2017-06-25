@@ -7,20 +7,22 @@ import {
 
 
 import LoginPage from './LoginPage.js'
-import HomePage from './HomePage.js'
+import SearchPage from './SearchPage.js'
 
 
 const SimpleApp = TabNavigator({
-    Home: { screen: HomePage,
-            navigationOptions: {
-                title: 'Home'
-                }
-            },
-  Login: { screen: LoginPage,
-           navigationOptions: {
-                title: 'Login'
-            }
-        },
+    Search: { 
+        screen: SearchPage,
+        navigationOptions: {
+            title: 'Home'
+        }
+    },
+    Login: { 
+        screen: LoginPage,
+        navigationOptions: {
+            title: 'Login'
+        }
+    },
   
 });
 
