@@ -7,14 +7,14 @@ import {
 
 
 import LoginPage from './LoginPage.js'
-import SearchPage from './SearchPage.js'
+import SearchPage from './SearchPage1.js'
 
 
 const SimpleApp = TabNavigator({
     Search: { 
         screen: SearchPage,
         navigationOptions: {
-            title: 'Home'
+            title: 'Search'
         }
     },
     Login: { 

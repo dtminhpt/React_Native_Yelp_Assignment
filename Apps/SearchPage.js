@@ -4,32 +4,32 @@ import {
   StyleSheet,
   Text,
   View,
-  ListView, 
-  TextInput, 
-  Button, 
-  Image, 
-  TouchableHighlight, 
-  RefreshControl, 
-  ActivityIndicator, 
+  ListView,
+  TextInput,
+  Button,
+  Image,
+  TouchableHighlight,
+  RefreshControl,
+  ActivityIndicator,
   Dimensions
 } from 'react-native';
 
 let _restaurantList = [];
-let DIMS = Dimensions.get('window'); 
+let DIMS = Dimensions.get('window');
 let SCREEN_WIDTH = DIMS.width;
 let SCREEN_HEIGHT = DIMS.height;
-export default class HomePage extends Component {
+export default class SearchPage extends Component {
     constructor(props) {
       super(props);
       const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
       this.state = {
         dataSource: ds.cloneWithRows([]),
-        access_token: "", 
-        token_type: "", 
-        searchString: "", 
-        refreshing: false, 
-        isFirstPage: true, 
-        currentPage: 1, 
+        access_token: "",
+        token_type: "",
+        searchString: "",
+        refreshing: false,
+        isFirstPage: true,
+        currentPage: 1,
         loading: true
       };
     }
@@ -39,8 +39,8 @@ export default class HomePage extends Component {
 
   fetchToken() {
     const params = {
-      client_id: 'qDPlyf_EBtljgqKxPALx6Q', // use your own
-      client_secret: 'RlFVBx8XonMjZcNnal3e827ooycXR7Pc4JngdpbM6UmdbW61GEfiss22OMRK0p4M', // use your own
+      client_id: 'xFFxSFfOHvhHLGiluxkizg', // use your own
+      client_secret: 'rEtHrl4UAZ4ZmjgGY0CfcGm300Jub2nm1mStUUp1fBeBYlIvFiRWzsP1r3qcqpq2', // use your own
       grant_type: 'client_credentials'
     }
 
@@ -58,14 +58,23 @@ export default class HomePage extends Component {
       })
       .then(json => {
         console.log(json);
+        console.log(json.access_token);
         this.setState({
-          token_type: json.token_type, 
+          token_type: json.token_type,
           access_token: json.access_token
         })
         this.fetchData();
-        
+
         return json; // Token
       })
+      .catch(error => {
+          console.log('There has been a problem with your fetch operation: ' + error.message);
+            this.setState({
+                loading: false, 
+                searchString: 'Something bad happened' + error
+            })
+        });
+      
     }
 
     fetchData() {
@@ -87,36 +96,30 @@ export default class HomePage extends Component {
         })
         .then(json => {
           console.log("fetchData Done");
-          console.log(json.businesses);
+          console.log("json.businesses= " + json.businesses);
           _restaurantList = _restaurantList.concat(json.businesses)
           this.setState(
             {
-              //dataSource: this.state.dataSource.cloneWithRows(json.businesses)
-              dataSource: this.state.dataSource.cloneWithRows(_restaurantList), 
-              isFirstPage: false, 
-              currentPage: this.state.currentPage + 1, 
+              //dataSource: this.state.dataSource.cloneWithRows(json.businesses),
+              dataSource: this.state.dataSource.cloneWithRows(_restaurantList),
+              isFirstPage: false,
+              currentPage: this.state.currentPage + 1,
               loading: false
             }
           )
           return json; // Token
         })
+        .catch(error => {
+          console.log('There has been a problem with your fetch operation: ' + error.message);
+            this.setState({
+                loading: false, 
+                searchString: 'Something bad happened' + error
+            })
+        });
   }
 
   _onEndReached() {
     this.fetchToken();
-  }
-
-  _onRefresh() {
-    this.setState({
-      refreshing: true, 
-      isFirstPage: true
-    })
-
-    this.fetchToken().then(()=> {
-      this.setState({
-        refreshing: false
-      });
-    })
   }
 
   searchRestaurant(text) {
@@ -145,14 +148,14 @@ export default class HomePage extends Component {
     }
   }
 
-  renderHeader(){
+  renderHeader(sectionID, rowID){
       return(
       <View style={{flexDirection: 'row', backgroundColor: 'red'}}>
           <TouchableHighlight underlayColor='#99d9f4'
             style={styles.button}
             onPress={() => alert("CLick Filter")}>
             <Text style={styles.buttonText}>Filter</Text>
-          </TouchableHighlight> 
+          </TouchableHighlight>
 
           <TextInput
               style={styles.inputSearch}
@@ -164,27 +167,32 @@ export default class HomePage extends Component {
       )
     }
 
-    renderRow(rowData) {
-        return(
-          <View>
-            <View style={styles.container}>
-                <Image 
-                  source={{uri: rowData.image_url}}
-                  style={styles.thumbnail}
-                />
-                <View style={{marginLeft:10}}>
-                  <Text style={{fontWeight: 'bold'}}>{rowData.name}</Text>
-                  <Text>{rowData.review_count} Reviews</Text>
-                  <Text style={styles.year}>{rowData.location.address1}</Text>
-                </View>
-            </View>
+    renderRow(rowData, sectionID, rowID) {
+      if (!rowData){
+        return;
+      }
+      return(
+        <View>
+          <View style={styles.container}>
+              <Image
+                source={{uri: rowData.image_url}}
+                style={styles.thumbnail}
+              />
+              <View style={{marginLeft:10}}>
+                <Text style={{fontWeight: 'bold'}}>{rowData.name}</Text>
+                <Text>{rowData.review_count} Reviews</Text>
+                <Text style={styles.year}>{rowData.location.address1}</Text>
+              </View>
           </View>
-            
-        )
+        </View>
+
+      )
     }
 
-    renderSeparator() {
-      return (<View style={{
+    renderSeparator(sectionID, rowID) {
+      return (<View 
+        key={`${sectionID}-${rowID}`}
+        style={{
           width: '90%',
           height: 2,
           alignSelf: 'center',
@@ -207,18 +215,13 @@ export default class HomePage extends Component {
       return (
         <View style={{marginTop: 20}}>
           <ListView
-              enableEmptySections={true}
-              renderHeader={this.renderHeader.bind(this)}
-              dataSource={this.state.dataSource}
-              renderRow={(rowData) => this.renderRow(rowData)}
-              renderSeparator={() => this.renderSeparator()}
-              onEndReached={this._onEndReached()}
-              refreshControl={
-                <RefreshControl
-                  refreshing={this.state.refreshing}
-                  onRefresh={() => this._onRefresh.bind(this)}
-                />
-              }
+            enableEmptySections={true}
+            renderHeader={this.renderHeader.bind(this)}
+            enableEmptySections= {true}
+            dataSource={this.state.dataSource}
+            renderRow={this.renderRow.bind(this)}
+            renderSeparator={this.renderSeparator.bind(this)}
+            onEndReached={this._onEndReached()}
           />
       </View>
       )
@@ -246,29 +249,29 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     fontSize: 15,
     backgroundColor: '#FFFFFF',
-    borderRadius: 6, 
-    borderWidth: 1, 
+    borderRadius: 6,
+    borderWidth: 1,
     margin: 5
-  }, 
+  },
   button: {
-    flex:1, 
-    borderWidth: 1, 
-    borderColor: 'black', 
-    borderRadius: 10,  
-    height: 30, 
-    margin: 5, 
+    flex:1,
+    borderWidth: 1,
+    borderColor: 'black',
+    borderRadius: 10,
+    height: 30,
+    margin: 5,
   },
   buttonText: {
-    alignSelf: 'center', 
-    marginTop: 5, 
+    alignSelf: 'center',
+    marginTop: 5,
     color: 'white'
-  }, 
+  },
   centering: {
     alignItems: 'center',
-    flex: 1, 
+    flex: 1,
     justifyContent: 'center',
     padding: 8,
   },
 });
 
-AppRegistry.registerComponent('HomePage', () => HomePage);
+AppRegistry.registerComponent('SearchPage', () => SearchPage);
