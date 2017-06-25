@@ -110,7 +110,7 @@ class FilterPage extends Component {
                                selectedSortBy:
                                { index: index, text:value}
                            })}
-                           renderRow={alert("NANA")}>
+                           renderRow={this._dropdown_renderRow.bind(this)}>
                            <Text style={{fontSize:22, paddingTop:4, paddingBottom:4,marginLeft:8, fontWeight:'500'}}>{this.state.selectedSortBy.text}</Text>              
                     </ModalDropDown>
 
