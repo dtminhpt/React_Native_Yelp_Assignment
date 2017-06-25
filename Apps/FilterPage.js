@@ -4,7 +4,9 @@ import {
     View,
     Text,
     ListView,
-    StatusBar
+    StatusBar, 
+    TouchableHighlight, 
+    Image
 } from 'react-native';
 
 import ModalDropDown from 'react-native-modal-dropdown'
@@ -39,10 +41,28 @@ class FilterPage extends Component {
             searchTerm:''
         }
     }
+     _dropdown_renderRow(rowData, rowID, highlighted) {
+    let icon = highlighted ? require('./resources/heart.png') : require('./resources/uncheck.png');
+    return (
+      <TouchableHighlight underlayColor='white'>
+        <View style={[styles.dropdown_row, {backgroundColor:'white'}]}>
+          <Text style={[styles.dropdown_row_text, highlighted && {color: 'mediumaquamarine'}]}>
+            {`${rowData}`}
+          </Text>
+          <Image style={styles.dropdown_image}
+                 mode='stretch'
+                 source={icon}
+          />
+          
+        </View>
+      </TouchableHighlight>
+    );
+  }
 
     render(){
         const distanceOptions = ['Auto','3 miles','1 miles','5 miles','20 miles'];
         const matchOptions = ['Best Match','Review Count','Rating'];
+        let dropdown_icon = this.state.dropdown_icon_heart ? require('./resources/heart.png') : require('./resources/uncheck.png');
 
         return(
             <View>
@@ -65,10 +85,11 @@ class FilterPage extends Component {
                            textStyle={styles.dropdown_text}
                            defaultIndex={this.state.selectedDistance.index}
                            dropdownStyle={styles.dropdown_dropdown}
-                           options={distanceOptions} onSelect={(index,value) => this.setState({selectedDistance:
+                           options={distanceOptions} 
+                           onSelect={(index,value) => this.setState({selectedDistance:
                                { index: index, text:value}
                            })}
-                           renderRow={alert("Haha")}>
+                           renderRow={this._dropdown_renderRow.bind(this)}>
                            <Text style={{fontSize:22, paddingTop:4, paddingBottom:4,marginLeft:8, fontWeight:'500'}}>{this.state.selectedDistance.text}</Text>              
                 </ModalDropDown>
 
@@ -84,7 +105,8 @@ class FilterPage extends Component {
                            textStyle={styles.dropdown_text}
                            defaultIndex={this.state.selectedSortBy.index}
                            dropdownStyle={styles.dropdown_dropdown}
-                           options={matchOptions} onSelect={(index,value) => this.setState({
+                           options={matchOptions} 
+                           onSelect={(index,value) => this.setState({
                                selectedSortBy:
                                { index: index, text:value}
                            })}
