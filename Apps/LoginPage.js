@@ -4,14 +4,26 @@ import {
   StyleSheet,
   Text,
   View, 
-  Button
+  Button, 
+  TouchableHighlight, 
 } from 'react-native';
+
+import FilterPage from './FilterPage.js'
+
+import {actionCreators} from "./reducer.js";
+import {connect} from "react-redux";
 
 const FBSDK =  require('react-native-fbsdk');
 
 const { LoginButton, LoginManager, ShareDialog } = FBSDK
 
-export default class LoginPage extends Component {
+class LoginPage extends Component {
+  constructor(props){
+    super(props);
+    this.state = {
+      dataProps: ""
+    }    
+  }
   _goToHome() {
        LoginManager.logInWithReadPermissions(['public_profile']).then((result) => {
         if (result.isCancelled) {
@@ -26,7 +38,17 @@ export default class LoginPage extends Component {
         alert('Login fail with error: ' + error);
       }
     );
-    }
+  }
+  
+  _gotoFilter = () => {
+    this.props.dispatch(actionCreators.setDataForMeNow({text: this.state.dataProps}))
+    this.props.navigator.push({
+      title: "Filter",
+      component: FilterPage, 
+      passProps: {dataPropsFromSearch: this.state.dataProps}
+    })
+  }
+
   render() {
     return (
       <View style={styles.container}>
@@ -45,6 +67,8 @@ export default class LoginPage extends Component {
             }
           }
           onLogoutFinished={() => alert("User logged out")}/>
+
+          <Button onPress={this._gotoFilter} title="Go to scene Filter" />
       </View>
       </View>
     );
@@ -69,3 +93,7 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
 });
+
+
+//Connect this component to Redux
+export default connect()(LoginPage);
