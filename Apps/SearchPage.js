@@ -31,16 +31,17 @@ class SearchPage extends Component {
       super(props);
       const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
       this.state = {
-        dataSource: ds.cloneWithRows(['']),
-        places: [''],
+        dataSource: ds.cloneWithRows([]),
+        places: [],
         access_token: "",
         token_type: "",
-        //token: {},
         //searchString: "",
         refreshing: false,
-        //isFirstPage: true,
-        //currentPage: 1,
+        isFirstPage: true,
+        currentPage: 1,
         loading: true, 
+        dataProps: "", 
+        token: {}
       };
     }
   componentDidMount(){
@@ -110,9 +111,9 @@ class SearchPage extends Component {
     }
 
     async fetchData() {
-      // if (this.state.isFirstPage) {
-      //   _restaurantList = [];
-      // }
+      if (this.state.isFirstPage) {
+        _restaurantList = [];
+      }
 
       const request = new Request('https://api.yelp.com/v3/businesses/search?term=delis&location=San%20Francisco', {
         method: 'GET',
@@ -127,14 +128,14 @@ class SearchPage extends Component {
         }).then(json => {
           console.log("fetchData Done");
           console.log("json.businesses= " + json.businesses);
-          //_restaurantList = _restaurantList.concat(json.businesses)
+          _restaurantList = _restaurantList.concat(json.businesses)
           this.setState(
             {
-              dataSource: this.state.dataSource.cloneWithRows(json.businesses),
+              //dataSource: this.state.dataSource.cloneWithRows(json.businesses),
               places: json.businesses,
-              //dataSource: this.state.dataSource.cloneWithRows(_restaurantList),
-              //isFirstPage: false,
-              //currentPage: this.state.currentPage + 1,
+              dataSource: this.state.dataSource.cloneWithRows(_restaurantList),
+              isFirstPage: false,
+              currentPage: this.state.currentPage + 1,
               loading: false, 
               refreshing: false,
             }
@@ -144,7 +145,7 @@ class SearchPage extends Component {
   }
 
   _onEndReached() {
-    this.fetchToken();
+    this.fetchData();
   }
 
   searchRestaurant(text) {
@@ -159,23 +160,23 @@ class SearchPage extends Component {
     // })
 
     var matchingPlaces = [];
-    this.state.places.forEach(function(place) {
-      if (place.name.toLowerCase().match(text.toLowerCase()))
-        matchingPlaces.push(place)
-    })
+    // this.state.places.forEach(function(place) {
+    //   if (place.name.toLowerCase().match(text.toLowerCase()))
+    //     matchingPlaces.push(place)
+    // })
 
-    // for (var i=0; i < this.state.dataSource._dataBlob.s1.length; i++) {
-    //   var name = this.state.dataSource._dataBlob.s1[i].name.toLowerCase();
-    //   if(name.search(text.toLowerCase()) !== -1){
-    //     matchingPlaces.push(this.state.dataSource._dataBlob.s1[i]);
-    //   }
-    // }
+    for (var i=0; i < this.state.dataSource._dataBlob.s1.length; i++) {
+      var name = this.state.dataSource._dataBlob.s1[i].name.toLowerCase();
+      if(name.search(text.toLowerCase()) !== -1){
+        matchingPlaces.push(this.state.dataSource._dataBlob.s1[i]);
+      }
+    }
 
     this.setState({
       dataSource: this.state.dataSource.cloneWithRows(matchingPlaces)
     });
 
-    if (rows.length === 0) {
+    if (matchingPlaces.length === 0) {
       alert("No result");
     }
   }
@@ -183,11 +184,12 @@ class SearchPage extends Component {
   renderHeader(sectionID, rowID){
       return(
       <View style={{flexDirection: 'row', backgroundColor: 'red'}}>
-          <TouchableHighlight underlayColor='#99d9f4'
+          {/*<TouchableHighlight underlayColor='#99d9f4'
             style={styles.button}
             onPress={() => alert("CLick Filter")}>
             <Text style={styles.buttonText}>Filter</Text>
-          </TouchableHighlight>
+          </TouchableHighlight>*/}
+          <Button onPress={this._gotoFilter} title="Go to scene Filter" />
 
           <TextInput
               style={styles.inputSearch}
@@ -199,7 +201,16 @@ class SearchPage extends Component {
       )
     }
 
-    renderRow(rowData, sectionID, rowID) {
+  _gotoFilter = () => {
+      this.props.dispatch(actionCreators.setDataForMeNow({text: this.state.dataProps}))
+      this.props.navigator.push({
+        title: "Filter",
+        component: FilterPage, 
+        passProps: {dataPropsFromSearch: this.state.dataProps}
+      })
+  }
+
+  renderRow(rowData, sectionID, rowID) {
       if (!rowData){
         return;
       }
