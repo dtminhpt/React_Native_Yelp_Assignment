@@ -32,7 +32,7 @@ export default class App extends Component {
     render(){
         const defaultRoute={
             title: "Search Page", 
-            component: LoginPage
+            component: SearchPage
         }
         return(
             <Provider store={store}>

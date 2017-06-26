@@ -17,6 +17,28 @@ import {actionCreators} from './reducer.js'
 import SearchPage from './SearchPage.js'
 import {Yelp} from './api/YelpSearch.js'
 
+
+class CustomSwitch extends Component {
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            switchValue:false
+        }
+    }
+
+    render() {
+        return(
+            <View>
+                <Text>{this.props.text}</Text>
+                <Switch
+                    onTintColor='#d11141' 
+                    value={this.props.switchOn}
+                />
+            </View>
+        )
+    }
+}
 class FilterPage extends Component {
     constructor(props) {
         super(props);
@@ -38,7 +60,9 @@ class FilterPage extends Component {
             currentCategories:[{}],
             selectedCategories: [],
             dataSource: this.ds.cloneWithRows([]),
-            searchTerm:''
+            searchTerm:'', 
+            dropdown_icon_heart: true,
+            offerSetting: false
         }
     }
      _dropdown_renderRow(rowData, rowID, highlighted) {
@@ -59,6 +83,28 @@ class FilterPage extends Component {
         );
     }
 
+    componenentWillMount() {
+        this.searchNewSetting();
+    }
+
+    async searchNewSetting(){
+        console.log('Start getting data from category api');
+
+        let category = await Yelp.getCategories().then((item) => {
+            return item;
+        });
+        console.log(category.length);
+
+        if (category.length > 0) {
+            this.setState({
+                categories: category, 
+                currentCategories: category.slice(0,3), 
+                loading: false, 
+                dataSource: this.ds.cloneWithRows(category.slice(0,3))
+            })
+        }
+    }
+
     returnSearchScreen() {
         this.props.navigator.push({
             title:'Search Screen',
@@ -68,6 +114,36 @@ class FilterPage extends Component {
 
     joinSearchTerm() {
         alert("joinSearchTerm")
+    }
+
+    addValueToCategory(alias, rowID) {
+        let tmpCategory = this.state.currentCategories;
+        var index = this.state.selectedCategories.indexOf(alias);
+        if (index != -1) {
+            this.state.selectedCategories.splice(index,1);
+            tmpCategory[rowID].check = false;
+        } else {
+            this.state.selectedCategories.push(alias);
+            tmpCategory[rowID].check = true;
+        }
+
+        this.setState({categories: tmpCategory, 
+                    dataSource: this.ds.cloneWithRows(tmpCategory)})
+
+        console.log(this.state.categories[rowID]);
+    }
+
+    renderCategoryCell(rowData, rowID) {
+        return(
+            <View>
+                <Text>{rowData.title}</Text>
+                <Switch
+                    onValueChange={() => this.addValueToCategory(rowData.alias, rowID)}
+                    onTintColor='#d11141'
+                    value = {this.state.categories[rowID].check}
+                />
+            </View>
+        )
     }
 
     render(){
