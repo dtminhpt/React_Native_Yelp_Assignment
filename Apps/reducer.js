@@ -31,7 +31,7 @@ export const reducer = (state = {},action) => {
 }
 
 export const actionCreators = {
-    setDataForMeNow(params) {
+    storeDataForSearch(params) {
         return {
             type: types.dataSearchPage, 
             payload: params

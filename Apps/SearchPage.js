@@ -42,6 +42,7 @@ class SearchPage extends Component {
         loading: true, 
         dataProps: "", 
         token: {}, 
+        dataProps: "Search lllll"
       };
     }
   componentDidMount(){
@@ -127,7 +128,7 @@ class SearchPage extends Component {
           return response.json()
         }).then(json => {
           console.log("fetchData Done");
-          console.log("json.businesses= " + json.businesses);
+          console.log("json.businesses" + JSON.stringify(json.businesses));
           _restaurantList = _restaurantList.concat(json.businesses)
           this.setState(
             {
@@ -193,7 +194,7 @@ class SearchPage extends Component {
     }
 
   _gotoFilter = () => {
-      this.props.dispatch(actionCreators.setDataForMeNow({text: this.state.dataProps}))
+      this.props.dispatch(actionCreators.storeDataForSearch({text: this.state.dataProps}))//Save data to store 
       this.props.navigator.push({
         title: "Filter",
         component: FilterPage, 
@@ -246,10 +247,10 @@ class SearchPage extends Component {
         return(
           <View style={{width: SCREEN_WIDTH, height: SCREEN_HEIGHT}}>
             <ActivityIndicator
-            loading={this.state.loading}
-            style={[styles.centering, {height: 80}]}
-            size="large"
-          />
+              loading={this.state.loading}
+              style={[styles.centering, {height: 80}]}
+              size="large"
+            />
           </View>
         )
       }
