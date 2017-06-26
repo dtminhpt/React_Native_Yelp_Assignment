@@ -175,12 +175,12 @@ class SearchPage extends Component {
   renderHeader(sectionID, rowID){
       return(
       <View style={{flexDirection: 'row', backgroundColor: 'red'}}>
-          {/*<TouchableHighlight underlayColor='#99d9f4'
+          <TouchableHighlight underlayColor='#99d9f4'
             style={styles.button}
-            onPress={() => alert("CLick Filter")}>
+            onPress={this._gotoFilter}>
             <Text style={styles.buttonText}>Filter</Text>
-          </TouchableHighlight>*/}
-          <Button onPress={this._gotoFilter} title="Go to scene Filter" />
+          </TouchableHighlight>
+         
 
           <TextInput
               style={styles.inputSearch}
