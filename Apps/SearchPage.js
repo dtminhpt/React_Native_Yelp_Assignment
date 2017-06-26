@@ -77,8 +77,8 @@ class SearchPage extends Component {
 
   fetchToken() {
     const params = {
-      client_id: 'xFFxSFfOHvhHLGiluxkizg', // use your own
-      client_secret: 'rEtHrl4UAZ4ZmjgGY0CfcGm300Jub2nm1mStUUp1fBeBYlIvFiRWzsP1r3qcqpq2', // use your own
+      client_id: 'qAT9tub1fVEsYOPrh7jrIg', // use your own
+      client_secret: 'h8xR9JKEOlj9lYT0XC5puua2Ho5FPXIXjEPIS38cyu0TnmYoyS9pw5KGPuNcHix0', // use your own
       grant_type: 'client_credentials'
     }
 
