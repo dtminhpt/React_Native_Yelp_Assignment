@@ -42,7 +42,7 @@ class SearchPage extends Component {
         loading: true, 
         dataProps: "", 
         token: {}, 
-        dataProps: "Search lllll"
+        dataProps: "From Search"
       };
     }
   componentDidMount(){
@@ -128,8 +128,9 @@ class SearchPage extends Component {
           return response.json()
         }).then(json => {
           console.log("fetchData Done");
-          console.log("json.businesses" + JSON.stringify(json.businesses));
+          //console.log("json.businesses" + encodeURIComponent(JSON.stringify(json.businesses)));
           _restaurantList = _restaurantList.concat(json.businesses)
+          console.log(_restaurantList)
           this.setState(
             {
               //dataSource: this.state.dataSource.cloneWithRows(json.businesses),
@@ -145,7 +146,7 @@ class SearchPage extends Component {
         }).done();
   }
 
-  _onEndReached() {
+  _onEndReached = () => {
     if (this.state.searchString === ""){
       this.fetchData();
     }
@@ -263,7 +264,7 @@ class SearchPage extends Component {
             dataSource={this.state.dataSource}
             renderRow={this.renderRow.bind(this)}
             renderSeparator={this.renderSeparator.bind(this)}
-            onEndReached={this._onEndReached()}
+            onEndReached={this._onEndReached}
           />
       </View>
       )
