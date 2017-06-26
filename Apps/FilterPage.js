@@ -42,22 +42,33 @@ class FilterPage extends Component {
         }
     }
      _dropdown_renderRow(rowData, rowID, highlighted) {
-    let icon = highlighted ? require('./resources/heart.png') : require('./resources/uncheck.png');
-    return (
-      <TouchableHighlight underlayColor='white'>
-        <View style={[styles.dropdown_row, {backgroundColor:'white'}]}>
-          <Text style={[styles.dropdown_row_text, highlighted && {color: 'mediumaquamarine'}]}>
-            {`${rowData}`}
-          </Text>
-          <Image style={styles.dropdown_image}
-                 mode='stretch'
-                 source={icon}
-          />
-          
-        </View>
-      </TouchableHighlight>
-    );
-  }
+        let icon = highlighted ? require('./resources/heart.png') : require('./resources/uncheck.png');
+        return (
+        <TouchableHighlight underlayColor='white'>
+            <View style={[styles.dropdown_row, {backgroundColor:'white'}]}>
+            <Text style={[styles.dropdown_row_text, highlighted && {color: 'mediumaquamarine'}]}>
+                {`${rowData}`}
+            </Text>
+            <Image style={styles.dropdown_image}
+                    mode='stretch'
+                    source={icon}
+            />
+            
+            </View>
+        </TouchableHighlight>
+        );
+    }
+
+    returnSearchScreen() {
+        this.props.navigator.push({
+            title:'Search Screen',
+            component:SearchPage
+        })
+    }
+
+    joinSearchTerm() {
+        alert("joinSearchTerm")
+    }
 
     render(){
         const distanceOptions = ['Auto','3 miles','1 miles','5 miles','20 miles'];
@@ -67,17 +78,14 @@ class FilterPage extends Component {
         return(
             <View>
                 <StatusBar barStyle='light-content'/>
-                <View>
-                    <Text>Cancel</Text>
+                <View style={{marginTop:30}}>
+                    <Text onPress={() => this.returnSearchScreen()}>Cancel</Text>
                     <Text>Filter</Text>
-                    <Text>Search</Text>
+                    <Text onPress={() => this.joinSearchTerm()}>Search</Text>
                 </View>
 
                 <View>
                     <Text>Distance</Text>
-                    {/*<ModalDropDown>
-                        <Text>{this.state.selectedDistance}</Text>
-                    </ModalDropDown>*/}
                     <ModalDropDown style={styles.dropdown}
                                     style={{paddingTop:6,paddingBottom:6, 
                                     backgroundColor:'white',borderRadius: 5, borderWidth: 1,borderColor:'silver',
@@ -95,9 +103,6 @@ class FilterPage extends Component {
 
 
                     <Text>Sort By</Text>
-                    {/*<ModalDropDown>
-                        <Text>{this.state.selectedSortBy}</Text>
-                    </ModalDropDown>*/}
                     <ModalDropDown style={styles.dropdown}
                                 style={{paddingTop:6,paddingBottom:6,
                             backgroundColor:'white',borderRadius: 5, borderWidth: 1,borderColor:'silver',
