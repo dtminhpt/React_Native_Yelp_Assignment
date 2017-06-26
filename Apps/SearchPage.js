@@ -35,13 +35,13 @@ class SearchPage extends Component {
         places: [],
         access_token: "",
         token_type: "",
-        //searchString: "",
+        searchString: "",
         refreshing: false,
         isFirstPage: true,
         currentPage: 1,
         loading: true, 
         dataProps: "", 
-        token: {}
+        token: {}, 
       };
     }
   componentDidMount(){
@@ -145,40 +145,31 @@ class SearchPage extends Component {
   }
 
   _onEndReached() {
-    this.fetchData();
+    if (this.state.searchString === ""){
+      this.fetchData();
+    }
   }
 
   searchRestaurant(text) {
     if (!text) {
       this.setState({
-        dataSource: this.state.dataSource.cloneWithRows(this.state.places)
+        dataSource: this.state.dataSource.cloneWithRows(this.state.places), 
       })
-    }
-
-    // this.setState({
-    //   searchString: text
-    // })
-
-    var matchingPlaces = [];
-    // this.state.places.forEach(function(place) {
-    //   if (place.name.toLowerCase().match(text.toLowerCase()))
-    //     matchingPlaces.push(place)
-    // })
-
-    for (var i=0; i < this.state.dataSource._dataBlob.s1.length; i++) {
-      var name = this.state.dataSource._dataBlob.s1[i].name.toLowerCase();
-      if(name.search(text.toLowerCase()) !== -1){
-        matchingPlaces.push(this.state.dataSource._dataBlob.s1[i]);
-      }
-    }
+    } 
 
     this.setState({
-      dataSource: this.state.dataSource.cloneWithRows(matchingPlaces)
-    });
+      searchString: text
+    })
 
-    if (matchingPlaces.length === 0) {
-      alert("No result");
-    }
+    var matchingPlaces = [];
+    this.state.places.forEach(function(place) {
+      if (place.name.toLowerCase().match(text.toLowerCase()))
+        matchingPlaces.push(place)
+    })
+
+    this.setState({
+      dataSource: this.state.dataSource.cloneWithRows(matchingPlaces), 
+    });
   }
 
   renderHeader(sectionID, rowID){
