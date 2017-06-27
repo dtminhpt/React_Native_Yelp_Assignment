@@ -168,6 +168,34 @@ class FilterPage extends Component {
         })
     }
 
+    joinSearchTerm(){
+        let term = '';
+        if(this.state.selectedDistance.text !== 'Auto'){
+            term += '&radius=' + this.state.selectedDistance.text.substr(0, this.state.selectedDistance.text.indexOf(' '));
+        }
+
+            let str = this.state.selectedSortBy.text.split(" ").join('_');
+            term += '&sort_by='+ str.toLowerCase();
+
+
+        if(this.state.selectedCategories.length > 0){
+            term += '&categories=' + this.state.selectedCategories.join(',');
+        }
+
+        this.setState({searchTerm: term});
+        this.props.dispatch(actionCreators.storeFilterSettings({
+            offerSetting:this.state.offerSetting,
+            selectedDistance: this.state.selectedDistance,
+            selectedSortBy: this.state.selectedSortBy,
+            categories: this.state.currentCategories,
+            searchTerm : term
+        }))
+
+        this.props.navigator.push({
+            title:'Search Screen',
+            component:SearchScreen
+        })
+    }
 
     render(){
         const distanceOptions = ['Auto','3 miles','1 miles','5 miles','20 miles'];
