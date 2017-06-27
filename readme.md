@@ -14,8 +14,8 @@ The following **required** functionality is completed:
    - [x] Infinite scroll for restaurant results.
 - [ ] Filter page: (Unfortunately, not all the filters in the real Yelp App, are supported in the Yelp API)
    - [x] Categories should show a subset of the full list, and when click "Show all" row to expand all subset.
-   - [ ] Clicking on the "Search" button should dismiss the filters page and trigger the search with the new filter settings.
-   - [ ] Using Redux to storage filter data
+   - [x] Clicking on the "Search" button should dismiss the filters page and trigger the search with the new filter settings.(but still have bug)
+   - [x] Using Redux to storage filter data
  - [x] Show loading page when waiting to fetch data from Yelp
 
 
