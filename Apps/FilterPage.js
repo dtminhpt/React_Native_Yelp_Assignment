@@ -6,7 +6,8 @@ import {
     ListView,
     StatusBar, 
     TouchableHighlight, 
-    Image
+    Image, 
+    Switch
 } from 'react-native';
 
 import ModalDropDown from 'react-native-modal-dropdown'
@@ -42,6 +43,8 @@ class CustomSwitch extends Component {
 class FilterPage extends Component {
     constructor(props) {
         super(props);
+
+        this.renderCategoryCell = this.renderCategoryCell.bind(this);
         this.ds = new ListView.DataSource({
             rowHasChanged: (r1, r2) => r1 !== r2
         });
@@ -83,24 +86,24 @@ class FilterPage extends Component {
         );
     }
 
-    componenentWillMount() {
+    componentDidMount() {
         this.searchNewSetting();
     }
 
     async searchNewSetting(){
         console.log('Start getting data from category api');
 
-        let category = await Yelp.getCategories().then((item) => {
+        let categories = await Yelp.getCategories().then((item) => {
             return item;
         });
-        console.log(category.length);
+        console.log(categories.length);
 
-        if (category.length > 0) {
+        if (categories.length > 0) {
             this.setState({
-                categories: category, 
-                currentCategories: category.slice(0,3), 
+                categories: categories, 
+                currentCategories: categories.slice(0,3), 
                 loading: false, 
-                dataSource: this.ds.cloneWithRows(category.slice(0,3))
+                dataSource: this.ds.cloneWithRows(categories.slice(0,3))
             })
         }
     }
@@ -110,10 +113,6 @@ class FilterPage extends Component {
             title:'Search Screen',
             component:SearchPage
         })
-    }
-
-    joinSearchTerm() {
-        alert("joinSearchTerm")
     }
 
     addValueToCategory(alias, rowID) {
@@ -128,20 +127,29 @@ class FilterPage extends Component {
         }
 
         this.setState({categories: tmpCategory, 
-                    dataSource: this.ds.cloneWithRows(tmpCategory)})
+                       dataSource: this.ds.cloneWithRows(tmpCategory)})
 
         console.log(this.state.categories[rowID]);
     }
 
     renderCategoryCell(rowData, rowID) {
         return(
-            <View>
-                <Text>{rowData.title}</Text>
-                <Switch
-                    onValueChange={() => this.addValueToCategory(rowData.alias, rowID)}
-                    onTintColor='#d11141'
-                    value = {this.state.categories[rowID].check}
-                />
+             <View style={{flexDirection:'row',
+                           justifyContent:'space-between', 
+                           paddingTop:8,
+                           paddingBottom:8,
+                           borderRadius: 5, 
+                           borderWidth: 1,
+                           borderColor:'silver',
+                           marginTop:2, 
+                           marginLeft:8, 
+                           marginRight:8}}>
+                <Text style={{marginLeft: 8,fontSize:22, fontWeight:'500'}}>{rowData.title}</Text>
+                <Switch 
+                    style={{marginRight:10}}
+                    onValueChange={() => this.addValueToCategory(rowData.alias, rowID)} 
+                    onTintColor='#d11141' 
+                    value={this.state.categories[rowID].check}/>
             </View>
         )
     }
@@ -154,11 +162,23 @@ class FilterPage extends Component {
         return(
             <View>
                 <StatusBar barStyle='light-content'/>
-                <View style={{marginTop:30}}>
-                    <Text onPress={() => this.returnSearchScreen()}>Cancel</Text>
-                    <Text>Filter</Text>
-                    <Text onPress={() => this.joinSearchTerm()}>Search</Text>
+                <View style={{marginTop:20, 
+                            backgroundColor: 'red', 
+                            marginBottom: 10, 
+                            marginLeft: 10, 
+                            marginRight: 10, 
+                            flexDirection: 'row', 
+                            justifyContent: 'space-between', 
+                            height: 38
+                            }}>
+                    <Text style={{fontSize: 20}}
+                        onPress={() => this.returnSearchScreen()}>Cancel</Text>
+                    <Text style={{fontSize: 20}}>Filter</Text>
+                    <Text style={{fontSize: 20}}
+                        onPress={() => this.joinSearchTerm()}>Search</Text>
                 </View>
+
+                <View><Text>{this.props.passProps.dataPropsFromSearch}</Text></View>
 
                 <View>
                     <Text>Distance</Text>
