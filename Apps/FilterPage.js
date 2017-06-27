@@ -11,12 +11,10 @@ import {
 } from 'react-native';
 
 import ModalDropDown from 'react-native-modal-dropdown'
-
-import {connect} from 'react-redux'
-import {actionCreators} from './reducer.js'
-
 import SearchPage from './SearchPage.js'
 import {Yelp} from './api/YelpSearch.js'
+import {connect} from 'react-redux'
+import {actionCreators} from './reducer.js'
 
 
 class CustomSwitch extends Component {
@@ -148,11 +146,28 @@ class FilterPage extends Component {
                 <Switch 
                     style={{marginRight:10}}
                     onValueChange={() => this.addValueToCategory(rowData.alias, rowID)} 
-                    onTintColor='#d11141' 
+                    onTintColor='red' 
                     value={this.state.categories[rowID].check}/>
             </View>
         )
     }
+
+    expandListView()
+    {
+        let tmpCategory = this.state.categories;
+        for(var i =0; i< 3;i++){
+            tmpCategory[i].check = this.state.currentCategories[i].check;
+        }
+        this.setState({
+            currentCategories: tmpCategory,
+            categories: tmpCategory,
+        })
+
+        this.setState({
+            dataSource: this.ds.cloneWithRows(tmpCategory)
+        })
+    }
+
 
     render(){
         const distanceOptions = ['Auto','3 miles','1 miles','5 miles','20 miles'];
@@ -178,7 +193,7 @@ class FilterPage extends Component {
                         onPress={() => this.joinSearchTerm()}>Search</Text>
                 </View>
 
-                <View><Text>{this.props.passProps.dataPropsFromSearch}</Text></View>
+                {/*<View><Text>{this.props.passProps.dataPropsFromSearch}</Text></View>*/}
 
                 <View>
                     <Text>Distance</Text>
@@ -218,10 +233,14 @@ class FilterPage extends Component {
                     <Text>Category</Text>
                     <View>
                         <ListView
+                            enableEmptySections={true}
                             dataSource={this.state.dataSource}
                             renderRow={(rowData, sectionID, rowID) => this.renderCategoryCell(rowData, rowID)}
                         />
-                        <Text onPress={() => this.expandListView()}>See all...</Text>
+                        <Text onPress={() => this.expandListView()} 
+                              style={{fontSize:22, textAlign:'center',
+                                      paddingTop:4, marginLeft:8, 
+                                      fontWeight:'400'}}>See all ...</Text>
                     </View>
                 </View>
             </View>
