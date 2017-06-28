@@ -38,10 +38,10 @@ export const actionCreators = {
         }
     },
     storeFilterSettings(params){
-        return (
+        return {
             type: types.dataFilterPage, 
             payload: params
-        )
+        }
 
     }
 }

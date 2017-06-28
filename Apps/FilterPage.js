@@ -193,7 +193,7 @@ class FilterPage extends Component {
 
         this.props.navigator.push({
             title:'Search Screen',
-            component:SearchScreen
+            component:SearchPage
         })
     }
 
